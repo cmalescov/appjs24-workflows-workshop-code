@@ -31,7 +31,7 @@ internal fun updateAppWidget(
     appWidgetManager: AppWidgetManager,
     appWidgetId: Int
 ) {
-    val widgetText = "Some updated widget text"
+    val widgetText = "Plugin updated widget text"
     // Construct the RemoteViews object
     val views = RemoteViews(context.packageName, R.layout.hello_app_widget)
     views.setTextViewText(R.id.appwidget_text, widgetText)
