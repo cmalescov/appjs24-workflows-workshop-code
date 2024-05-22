@@ -1,11 +1,24 @@
-import { StatusBar } from "expo-status-bar";
-import { Platform, ScrollView, View, Text } from "react-native";
-import { Image } from "expo-image";
-import { Stack } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {StatusBar} from "expo-status-bar";
+import {ActivityIndicator, Platform, Pressable, ScrollView, Text, View} from "react-native";
+import {Image} from "expo-image";
+import {Stack} from "expo-router";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
+import {useEffect} from "react";
+import * as Updates from "expo-updates";
+import * as Application from "expo-application";
 
 export default function VisitScreen() {
   const insets = useSafeAreaInsets();
+  const updateInfo = Updates.useUpdates();
+
+  useEffect(() => {
+    (async function runAsync() {
+      const status = await Updates.checkForUpdateAsync();
+      if (status.isAvailable) {
+        await Updates.fetchUpdateAsync();
+      }
+    })();
+  }, []);
 
   return (
     <View className="flex-1">
@@ -14,7 +27,7 @@ export default function VisitScreen() {
           title: "Visit CMA",
         }}
       />
-      <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom }} className="bg-shade-1">
+      <ScrollView contentContainerStyle={{paddingBottom: insets.bottom}} className="bg-shade-1">
         <View className="row-y-2 px-4 py-2">
           <Text className="text-4xl font-semibold text-center">
             The Cleveland Museum of Art
@@ -33,13 +46,13 @@ export default function VisitScreen() {
           Hours
         </Text>
         <View className="row-y-2 px-4 py-2">
-          <DailyHours day="Sunday" hours="10:00 a.m.–5:00 p.m." />
-          <DailyHours day="Monday" hours="Closed" />
-          <DailyHours day="Tuesday" hours="10:00 a.m.–5:00 p.m." />
-          <DailyHours day="Wednesday" hours="10:00 a.m.–9:00 p.m." />
-          <DailyHours day="Thursday" hours="10:00 a.m.–5:00 p.m." />
-          <DailyHours day="Friday" hours="10:00 a.m.–9:00 p.m." />
-          <DailyHours day="Saturday" hours="10:00 a.m.–5:00 p.m." />
+          <DailyHours day="Sunday" hours="10:00 a.m.–5:00 p.m."/>
+          <DailyHours day="Monday" hours="Closed"/>
+          <DailyHours day="Tuesday" hours="10:00 a.m.–5:00 p.m."/>
+          <DailyHours day="Wednesday" hours="10:00 a.m.–9:00 p.m."/>
+          <DailyHours day="Thursday" hours="10:00 a.m.–5:00 p.m."/>
+          <DailyHours day="Friday" hours="10:00 a.m.–9:00 p.m."/>
+          <DailyHours day="Saturday" hours="10:00 a.m.–5:00 p.m."/>
         </View>
         <View className="px-4 py-2">
           <Image
@@ -48,14 +61,45 @@ export default function VisitScreen() {
             contentFit="contain"
           />
         </View>
+
+        <View className="row-y-2 items-center my-10 mx-10">
+          <Text className="text-l font-bold">Version</Text>
+          <Text className="text-l">
+            {Application.nativeApplicationVersion}-{Application.nativeBuildVersion}
+          </Text>
+          <Text className="text-l">{Updates.updateId || "n/a"}</Text>
+          {updateInfo.isChecking || updateInfo.isDownloading ? (
+            <ActivityIndicator size="small"/>
+          ) : null}
+          {updateInfo.isUpdateAvailable && updateInfo.isUpdatePending ? (
+            <Pressable
+              onPress={() => {
+                Updates.reloadAsync();
+              }}
+            >
+              <Text className="text-xl my-2 text-tint">Update your app</Text>
+            </Pressable>
+          ) : null}
+          {updateInfo.downloadError ? (
+            <>
+              <Text className="text-l my-2 text-center">
+                There's an update available for your app, but the download failed.
+              </Text>
+              <Text className="text-l my-2 text-center">
+                {updateInfo.downloadError?.message}
+              </Text>
+            </>
+          ) : null}
+        </View>
+
       </ScrollView>
       {/* Use a light status bar on iOS to account for the black space above the modal */}
-      <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
+      <StatusBar style={Platform.OS === "ios" ? "light" : "auto"}/>
     </View>
   );
 }
 
-function DailyHours({ day, hours }: { day: string; hours: string }) {
+function DailyHours({day, hours}: { day: string; hours: string }) {
   return (
     <View className="flex-row justify-between">
       <Text className="text-xl flex-1">{day}</Text>

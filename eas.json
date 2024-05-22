@@ -18,6 +18,15 @@
       "distribution": "internal",
       "channel": "preview"
     },
+    "production:pretend" : {
+      "channel": "production",
+      "ios": {
+        "simulator": true
+      },
+      "android": {
+        "buildType": "apk"
+      }
+    },
     "production": {
       "channel": "production"
     }
