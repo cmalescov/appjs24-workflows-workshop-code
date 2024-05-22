@@ -16,6 +16,8 @@ web-build/
 *.p12
 *.key
 *.mobileprovision
+*.apk
+*.tar.gz
 
 # Metro
 .metro-health-check*
@@ -45,4 +47,3 @@ storage/**
 
 /ios
 /android
-*.apk
