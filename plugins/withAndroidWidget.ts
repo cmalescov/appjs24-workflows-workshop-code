@@ -1,13 +1,16 @@
-import { ConfigPlugin, withDangerousMod } from "@expo/config-plugins";
+import {ConfigPlugin} from "@expo/config-plugins";
+import withWidgetFiles from "./withWidgetFiles";
+import withWidgetDescription from "./withWidgetDescription";
+import withAndroidManifestReceiver from "./withAndroidManifest";
 
 const withAndroidWidget: ConfigPlugin = (config) => {
-  return withDangerousMod(config, [
-    "android",
-    (dangerousConfig) => {
-      console.log("Android widget!");
-      return dangerousConfig;
-    },
-  ]);
+  const widgetName = "HelloAppWidget";
+  const widgetPath = "widgets/android";
+
+  config = withWidgetDescription(config);
+  config = withWidgetFiles(config, widgetName, widgetPath);
+  config = withAndroidManifestReceiver(config, widgetName);
+  return config;
 };
 
 export default withAndroidWidget;
